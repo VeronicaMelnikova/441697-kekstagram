@@ -7,13 +7,11 @@ var COMMENT_LIST = ['Всё отлично!', 'В целом всё неплох
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'];
 
 var descriptionPhotos = [];
+var photoComments = [];
 var PHOTOS_COUNT = 25;
 
-// var galleryOverlay = document.querySelector('.gallery-overlay');
-// galleryOverlay.classList.remove('hidden');
 
 var pictureTemplate = document.querySelector('#picture-template').content;
-
 var picturesElement = document.querySelector('.pictures');
 
 var getRandomIndex = function (array) {
@@ -21,15 +19,36 @@ var getRandomIndex = function (array) {
   return Math.round(random);
 };
 
-var getRandomComment = function (array) {
-  var index = getRandomIndex(array);
-  return array[index];
-};
-
 var getRandomLike = function (minLike, maxLike) {
   var randomLike = minLike - 0.5 + Math.random() * (maxLike - minLike + 1);
   randomLike = Math.round(randomLike);
   return randomLike;
+};
+
+/*
+function compareRandom() {
+  return Math.random() - 0.5;
+}
+
+var getRandomComment = function () {
+  var arrLegth = COMMENT_LIST.length - 1;
+  for (var i = 0; i < 2; i++) {
+    COMMENT_LIST.sort(compareRandom);
+    photoComments[i] = COMMENT_LIST[arrLegth];
+    arrLegth = arrLegth - i;
+    COMMENT_LIST.splice(5, 1);
+  }
+  return photoComments;
+};
+*/
+var w = getRandomLike(1, 2);
+
+var getRandomComment = function () {
+  for (var i = 0; i < w; i++) {
+    var index = getRandomIndex(COMMENT_LIST);
+    photoComments[i] = COMMENT_LIST[index];
+  }
+  return photoComments;
 };
 
 var renderPicture = function (picture) {
@@ -46,10 +65,28 @@ var fragment = document.createDocumentFragment();
 
 for (var i = 0; i < PHOTOS_COUNT; i++) {
   descriptionPhotos[i] = {
-    url: "photos/" + (i + 1) + ".jpg",
+    url: 'photos/' + (i + 1) + '.jpg',
     likes: getRandomLike(15, 200),
-    comments: getRandomComment(COMMENT_LIST)
+    comments: getRandomComment()
   };
   fragment.appendChild(renderPicture(descriptionPhotos[i]));
 }
 picturesElement.appendChild(fragment);
+
+
+var galleryOverlay = document.querySelector('.gallery-overlay');
+galleryOverlay.classList.remove('hidden');
+
+var renderOverlay = function (over) {
+  var overlayElement = galleryOverlay.cloneNode(true);
+
+  overlayElement.querySelector('.gallery-overlay-image').src = over.url;
+  overlayElement.querySelector('.likes-count').textContent = over.likes;
+  overlayElement.querySelector('.comments-count').textContent = over.comments.length;
+
+  return overlayElement;
+};
+
+var overlay = document.createDocumentFragment();
+overlay.appendChild(renderOverlay(descriptionPhotos[0]));
+galleryOverlay.appendChild(overlay);
