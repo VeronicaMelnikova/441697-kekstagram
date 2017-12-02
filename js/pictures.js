@@ -10,7 +10,7 @@ var PHOTOS_COUNT = 25;
 var pictureTemplate = document.querySelector('#picture-template').content;
 var picturesElement = document.querySelector('.pictures');
 var galleryOverlay = document.querySelector('.gallery-overlay');
-var overlay = document.createDocumentFragment();
+
 
 var getRandomIndex = function (array) {
   var random = -0.5 + Math.random() * array.length;
@@ -80,5 +80,3 @@ var renderOverlay = function (over) {
 };
 
 renderOverlay(descriptionPhotos[0]);
-
-galleryOverlay.appendChild(overlay);
