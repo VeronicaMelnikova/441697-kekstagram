@@ -6,11 +6,10 @@ var COMMENT_LIST = ['Всё отлично!', 'В целом всё неплох
   'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'];
 var PHOTOS_COUNT = 25;
-var descriptionPhotos = [];
+
 var pictureTemplate = document.querySelector('#picture-template').content;
 var picturesElement = document.querySelector('.pictures');
 var galleryOverlay = document.querySelector('.gallery-overlay');
-var fragment = document.createDocumentFragment();
 var overlay = document.createDocumentFragment();
 
 var getRandomIndex = function (array) {
@@ -18,14 +17,14 @@ var getRandomIndex = function (array) {
   return Math.round(random);
 };
 
-var getRandomLike = function (minLike, maxLike) {
-  var randomLike = minLike - 0.5 + Math.random() * (maxLike - minLike + 1);
-  randomLike = Math.round(randomLike);
-  return randomLike;
+var getRandomNumber = function (min, max) {
+  var randomNumber = min - 0.5 + Math.random() * (max - min + 1);
+  randomNumber = Math.round(randomNumber);
+  return randomNumber;
 };
 
-var getRandomComment = function (array) {
-  var numberOfComments = getRandomLike(1, 2);
+var getRandomComments = function (array) {
+  var numberOfComments = getRandomNumber(1, 2);
   var photoComments = [];
   for (var i = 0; i < numberOfComments; i++) {
     var index = getRandomIndex(array);
@@ -44,27 +43,30 @@ var renderPicture = function (picture) {
   return pictureElement;
 };
 
-var renderDescriptionPhoto = function () {
-  fillingDescriptionPhotos();
-  for (var i = 0; i < PHOTOS_COUNT; i++) {
-    fragment.appendChild(renderPicture(descriptionPhotos[i]));
-  }
-  return fragment;
-};
 
 var fillingDescriptionPhotos = function () {
+  var descriptionPhotos = [];
   for (var i = 0; i < PHOTOS_COUNT; i++) {
     descriptionPhotos[i] = {
       url: 'photos/' + (i + 1) + '.jpg',
-      likes: getRandomLike(15, 200),
-      comments: getRandomComment(COMMENT_LIST)
+      likes: getRandomNumber(15, 200),
+      comments: getRandomComments(COMMENT_LIST)
     };
   }
   return descriptionPhotos;
 };
 
+var descriptionPhotos = fillingDescriptionPhotos();
 
-picturesElement.appendChild(renderDescriptionPhoto());
+var renderPhotos = function (array) {
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < PHOTOS_COUNT; i++) {
+    fragment.appendChild(renderPicture(array[i]));
+  }
+  return fragment;
+};
+
+picturesElement.appendChild(renderPhotos(descriptionPhotos));
 
 galleryOverlay.classList.remove('hidden');
 
@@ -77,6 +79,6 @@ var renderOverlay = function (over) {
   return overlayElement;
 };
 
-overlay.appendChild(renderOverlay(descriptionPhotos[0]));
+renderOverlay(descriptionPhotos[0]);
 
 galleryOverlay.appendChild(overlay);
