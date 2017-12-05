@@ -78,12 +78,11 @@ var renderOverlay = function (over) {
   overlayElement.querySelector('.comments-count').textContent = over.comments.length;
   return overlayElement;
 };
-renderOverlay(descriptionPhotos[0]);
 
 
 var ENTER_KEYCODE = 13;
 var ESC_KEYCODE = 27;
-var galleryOverlayOpen = document.querySelector('.picture'); // не переносится в начало
+var galleryOverlayOpen = document.querySelectorAll('.picture');
 var galleryOverlayClose = document.querySelector('.gallery-overlay-close');
 
 var onPopupEscPress = function (evt) {
@@ -114,13 +113,14 @@ galleryOverlayClose.addEventListener('keydown', function (evt) {
 });
 
 // открывашка
-galleryOverlayOpen.addEventListener('click', function () {
-  openPopup();
-
-});
-
-galleryOverlayOpen.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
+for (var i = 0; i < PHOTOS_COUNT; i++) {
+  galleryOverlayOpen[i].addEventListener('click', function () {
     openPopup();
-  }
-});
+  }, true);
+  galleryOverlayOpen[i].addEventListener('keydown', function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      openPopup();
+    }
+  }, true);
+  renderOverlay(descriptionPhotos[i]);
+}
