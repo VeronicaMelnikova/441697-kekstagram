@@ -68,15 +68,57 @@ var renderPhotos = function (array) {
 
 picturesElement.appendChild(renderPhotos(descriptionPhotos));
 
-galleryOverlay.classList.remove('hidden');
-
 var renderOverlay = function (over) {
   var overlayElement = document.querySelector('.gallery-overlay-preview');
 
   overlayElement.querySelector('.gallery-overlay-image').src = over.url;
   overlayElement.querySelector('.likes-count').textContent = over.likes;
   overlayElement.querySelector('.comments-count').textContent = over.comments.length;
-  return overlayElement;
 };
 
-renderOverlay(descriptionPhotos[0]);
+
+var ENTER_KEYCODE = 13;
+var ESC_KEYCODE = 27;
+var pictures = document.querySelectorAll('.picture');
+var galleryOverlayClose = document.querySelector('.gallery-overlay-close');
+
+var onKeyPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+
+var openPopup = function () {
+  galleryOverlay.classList.remove('hidden');
+  document.addEventListener('keydown', onKeyPress);
+};
+
+var closePopup = function () {
+  galleryOverlay.classList.add('hidden');
+  document.removeEventListener('keydown', onKeyPress);
+};
+
+//  закрывашка
+galleryOverlayClose.addEventListener('click', function () {
+  closePopup();
+});
+
+galleryOverlayClose.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    closePopup();
+  }
+});
+
+// открывашка
+var generateHandler = function (object) {
+  return function (evt) {
+    evt.preventDefault();
+    renderOverlay(object);
+    openPopup();
+  };
+};
+
+for (var i = 0; i < PHOTOS_COUNT; i++) {
+  var handler = generateHandler(descriptionPhotos[i]);
+  pictures[i].addEventListener('click', handler);
+}
