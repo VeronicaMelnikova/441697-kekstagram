@@ -261,7 +261,7 @@ form.onsubmit = function (evt) {
   checkTags();
   if (checkTags()) {
     form.submit();
-    form.reset();
+
   } else {
     errorHashtags();
   }
