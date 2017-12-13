@@ -68,11 +68,11 @@ var renderPhotos = function (array) {
 
 picturesElement.appendChild(renderPhotos(descriptionPhotos));
 
-var overlayElement = document.querySelector('.gallery-overlay-preview');
+var previewOverlay = document.querySelector('.gallery-overlay-preview');
 var renderOverlay = function (over) {
-  overlayElement.querySelector('.gallery-overlay-image').src = over.url;
-  overlayElement.querySelector('.likes-count').textContent = over.likes;
-  overlayElement.querySelector('.comments-count').textContent = over.comments.length;
+  previewOverlay.querySelector('.gallery-overlay-image').src = over.url;
+  previewOverlay.querySelector('.likes-count').textContent = over.likes;
+  previewOverlay.querySelector('.comments-count').textContent = over.comments.length;
 };
 
 
@@ -109,7 +109,7 @@ galleryOverlayClose.addEventListener('keydown', function (evt) {
 });
 
 // открывашка
-var generateHandler = function (object) {
+var generatePreview = function (object) {
   return function (evt) {
     evt.preventDefault();
     renderOverlay(object);
@@ -117,18 +117,20 @@ var generateHandler = function (object) {
   };
 };
 
-
-for (var i = 0; i < PHOTOS_COUNT; i++) {
-  var handler = generateHandler(descriptionPhotos[i]);
-  pictures[i].addEventListener('click', handler);
-}
+var onClickPreview = function () {
+  for (var i = 0; i < PHOTOS_COUNT; i++) {
+    var fillingPreview = generatePreview(descriptionPhotos[i]);
+    pictures[i].addEventListener('click', fillingPreview);
+  }
+};
+onClickPreview();
 
 var uploadOverlay = document.querySelector('.upload-overlay');
-var input = document.querySelector('.upload-input');
+var fileInput = document.querySelector('.upload-input');
 var uploadClose = document.querySelector('#upload-cancel');
 var uploadTextarea = document.querySelector('.upload-form-description');
 
-var onOverlayEscPress = function (evt) {
+var onOverlayKeyPress = function (evt) {
   var active = document.activeElement;
   if (evt.keyCode === ESC_KEYCODE) {
     if (active !== uploadTextarea) {
@@ -139,15 +141,15 @@ var onOverlayEscPress = function (evt) {
 
 var closeUploadOverlay = function () {
   uploadOverlay.classList.add('hidden');
-  document.removeEventListener('keydown', onOverlayEscPress);
+  document.removeEventListener('keydown', onOverlayKeyPress);
 };
 
 var openUploadOverlay = function () {
   uploadOverlay.classList.remove('hidden');
-  document.addEventListener('keydown', onOverlayEscPress);
+  document.addEventListener('keydown', onOverlayKeyPress);
 };
 
-input.addEventListener('change', function () {
+fileInput.addEventListener('change', function () {
   openUploadOverlay();
 });
 
@@ -160,14 +162,20 @@ uploadClose.addEventListener('click', function () {
 var uploadEffects = document.querySelector('.upload-effect-controls');
 var imagePreview = document.querySelector('.effect-image-preview');
 
+var currentFilter;
+var changeFilter = function (filterName) {
+  if (currentFilter) {
+    imagePreview.classList.remove(currentFilter);
+  }
+  imagePreview.classList.add(filterName);
+  currentFilter = filterName;
+};
 
 uploadEffects.addEventListener('click', function (evt) {
-  var target = evt.target.value;
-
+  var targetValue = evt.target.value;
   if (evt.target.tagName === 'INPUT') {
-    var imageClass = 'effect-' + target;
-    imagePreview.classList.remove(imagePreview.classList.item(1));
-    imagePreview.classList.add(imageClass);
+    var imageClass = 'effect-' + targetValue;
+    changeFilter(imageClass);
   }
 });
 
@@ -182,7 +190,7 @@ var zoomStep = 25;
 var zoomMin = 25;
 var zoomMax = 100;
 
-var decImage = function () {
+var getDecrementedValue = function () {
   var resizeValueDec = +resizeValue.slice(0, -1);
   if (resizeValueDec > zoomMin + zoomStep - 1) {
     resizeValueDec = resizeValueDec - zoomStep;
@@ -191,20 +199,21 @@ var decImage = function () {
   return resizeValueDec;
 };
 
-var decScale = function () {
-  var scale = decImage().slice(0, -1);
+var decrementedScale = function () {
+  var scale = getDecrementedValue().slice(0, -1);
   scale = 'scale(' + (scale / 100) + ')';
   return scale;
 };
 
 
 resizeButtonDec.addEventListener('click', function () {
-  imageScale.value = decImage();
-  imagePreview.style.transform = decScale();
-  resizeValue = decImage();
+  var newValue = getDecrementedValue();
+  imageScale.value = newValue;
+  imagePreview.style.transform = decrementedScale();
+  resizeValue = newValue;
 });
 
-var incImage = function () {
+var getIncrementedValue = function () {
   var resizeValueInc = +resizeValue.slice(0, -1);
   if (resizeValueInc < zoomMax - zoomStep + 1) {
     resizeValueInc = resizeValueInc + zoomStep;
@@ -213,80 +222,91 @@ var incImage = function () {
   return resizeValueInc;
 };
 
-var incScale = function () {
-  var scale = incImage().slice(0, -1);
+var incrementedScale = function () {
+  var scale = getIncrementedValue().slice(0, -1);
   scale = 'scale(' + (scale / 100) + ')';
   return scale;
 };
 
 resizeButtonInc.addEventListener('click', function () {
-  imageScale.value = incImage();
-  imagePreview.style.transform = incScale();
-  resizeValue = incImage();
+  var newValue = getIncrementedValue();
+  imageScale.value = newValue;
+  imagePreview.style.transform = incrementedScale();
+  resizeValue = newValue;
 });
 
 
 // #теги
-var hashtagsForm = document.querySelector('.upload-form-hashtags');
 var form = document.querySelector('.upload-form');
-var sendButton = document.querySelector('.upload-form-submit');
+var hashtagsInputElement = form.querySelector('.upload-form-hashtags');
+// var sendButton = document.querySelector('.upload-form-submit');
+var MAX_TAGS_COUNT = 5;
+var MAX_TAG_LENGTH = 20;
 
 var getHashtags = function () {
-  var hashtags = hashtagsForm.value;
-  hashtags = hashtags.split(' ');
-  return hashtags;
+  var hashtags = hashtagsInputElement.value;
+  return hashtags.split(' ');
 };
+
 var listOfHashtags = getHashtags();
 
 var errorHashtags = function () {
-  sendButton.addEventListener('click', function (evt) {
-    evt.preventDefault();
-  });
-  hashtagsForm.classList.add('upload-message-error');
+  hashtagsInputElement.classList.add('upload-message-error');
 };
 
-var checkQuality = function () {
-  if (listOfHashtags.legth > 5) {
-    checkLength();
+
+form.onsubmit = function (evt) {
+  evt.preventDefault();
+  listOfHashtags = getHashtags();
+  checkTags();
+  if (checkTags()) {
+    form.submit();
+    form.reset();
   } else {
     errorHashtags();
   }
+
 };
 
-var checkLength = function () {
-  var hashtagsLetters = listOfHashtags[i].split('');
-  for (i = 0; i < listOfHashtags.length; i++) {
-    if (hashtagsLetters.length < 20) {
-      checkHashtagSymbol();
-    } else {
-      errorHashtags();
+var checkTagsQuantity = function () {
+  return listOfHashtags.length < MAX_TAGS_COUNT;
+};
+
+var checkTagsLength = function (tag) {
+  return tag.length > MAX_TAG_LENGTH || tag.length < 2;
+};
+var checkHashIndex = function (tag) {
+  return tag.lastIndexOf('#') !== 0;
+};
+var checkHashRepeat = function (tag, next) {
+  return tag.toUpperCase() === next.toUpperCase();
+};
+var checks = [
+  checkTagsLength,
+  checkHashIndex,
+  checkHashRepeat
+];
+
+var checkEvery = function (tag, next) {
+  for (var i = 0; i < checks.length; i++) {
+    if (checks[i](tag, next)) {
+      return true;
     }
   }
+  return false;
 };
 
-var checkHashtagSymbol = function () {
-  for (i = 0; i < listOfHashtags.length; i++) {
-    if (listOfHashtags[i].lastIndexOf('#') === 0) {
-      checkRepeat();
-    } else {
-      errorHashtags();
+var checkTagsElements = function () {
+  var copy = listOfHashtags.slice().sort();
+  for (var i = 0; i < listOfHashtags.length; i++) {
+    var next = copy[i + 1] || '';
+    if (checkEvery(copy[i], next)) {
+      return false;
     }
   }
+  return true;
 };
 
-var checkRepeat = function () {
-  var copyListOfHashtags = listOfHashtags.slice();
-  copyListOfHashtags[i] = copyListOfHashtags[i].toUpperCase();
-  copyListOfHashtags[i] = copyListOfHashtags[i].sort();
-  for (i = 0; i < copyListOfHashtags[i].length; i++) {
-    if (copyListOfHashtags[i] !== copyListOfHashtags[i + 1]) {
-      form.submit();
-    } else {
-      errorHashtags();
-    }
-  }
+var checkTags = function () {
+  return checkTagsQuantity() && checkTagsElements();
 };
-
-sendButton.addEventListener('click', function () {
-  checkQuality();
-});
