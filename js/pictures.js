@@ -113,7 +113,7 @@ var generateHandler = function (object) {
   return function (evt) {
     evt.preventDefault();
     renderOverlay(object);
-    openPopup(galleryOverlay);
+    openPopup();
   };
 };
 
@@ -121,31 +121,30 @@ var generateHandler = function (object) {
 for (var i = 0; i < PHOTOS_COUNT; i++) {
   var handler = generateHandler(descriptionPhotos[i]);
   pictures[i].addEventListener('click', handler);
-  // pictures[i].addEventListener('keydown', function (evt) {
-  //   if (evt.keyCode === ENTER_KEYCODE) {
-  //
-  //   }
-  // });
 }
 
 var uploadOverlay = document.querySelector('.upload-overlay');
 var input = document.querySelector('.upload-input');
 var uploadClose = document.querySelector('#upload-cancel');
+var uploadTextarea = document.querySelector('.upload-form-description');
 
-var onEscPress = function (evt) {
+var onOverlayEscPress = function (evt) {
+  var active = document.activeElement;
   if (evt.keyCode === ESC_KEYCODE) {
-    closeUploadOverlay();
+    if (active !== uploadTextarea) {
+      closeUploadOverlay();
+    }
   }
 };
 
 var closeUploadOverlay = function () {
   uploadOverlay.classList.add('hidden');
-  document.removeEventListener('keydown', onEscPress);
+  document.removeEventListener('keydown', onOverlayEscPress);
 };
 
 var openUploadOverlay = function () {
   uploadOverlay.classList.remove('hidden');
-  document.addEventListener('keydown', onEscPress);
+  document.addEventListener('keydown', onOverlayEscPress);
 };
 
 input.addEventListener('change', function () {
@@ -161,10 +160,15 @@ uploadClose.addEventListener('click', function () {
 var uploadEffects = document.querySelector('.upload-effect-controls');
 var imagePreview = document.querySelector('.effect-image-preview');
 
+
 uploadEffects.addEventListener('click', function (evt) {
   var target = evt.target.value;
-  var imageClass = 'effect-' + target;
-  imagePreview.classList = (imageClass);
+
+  if (evt.target.tagName === 'INPUT') {
+    var imageClass = 'effect-' + target;
+    imagePreview.classList.remove(imagePreview.classList.item(1));
+    imagePreview.classList.add(imageClass);
+  }
 });
 
 
@@ -172,15 +176,16 @@ uploadEffects.addEventListener('click', function (evt) {
 var resizeButtonInc = document.querySelector('.upload-resize-controls-button-inc');
 var resizeButtonDec = document.querySelector('.upload-resize-controls-button-dec');
 var resizeValue = document.querySelector('.upload-resize-controls-value').value;
+var imageScale = document.querySelector('.upload-resize-controls-value');
 
 var zoomStep = 25;
 var zoomMin = 25;
 var zoomMax = 100;
 
 var decImage = function () {
-  var resizeValueDec = resizeValue.slice(0, -1);
-  if (resizeValueDec >= zoomMin + zoomStep) {
-    resizeValueDec = +resizeValueDec - zoomStep;
+  var resizeValueDec = +resizeValue.slice(0, -1);
+  if (resizeValueDec > zoomMin + zoomStep - 1) {
+    resizeValueDec = resizeValueDec - zoomStep;
   }
   resizeValueDec = resizeValueDec + '%';
   return resizeValueDec;
@@ -192,16 +197,17 @@ var decScale = function () {
   return scale;
 };
 
+
 resizeButtonDec.addEventListener('click', function () {
-  document.querySelector('.upload-resize-controls-value').value = decImage();
+  imageScale.value = decImage();
   imagePreview.style.transform = decScale();
   resizeValue = decImage();
 });
 
 var incImage = function () {
-  var resizeValueInc = resizeValue.slice(0, -1);
-  if (resizeValueInc <= zoomMax - zoomStep) {
-    resizeValueInc = +resizeValueInc + zoomStep;
+  var resizeValueInc = +resizeValue.slice(0, -1);
+  if (resizeValueInc < zoomMax - zoomStep + 1) {
+    resizeValueInc = resizeValueInc + zoomStep;
   }
   resizeValueInc = resizeValueInc + '%';
   return resizeValueInc;
@@ -214,11 +220,65 @@ var incScale = function () {
 };
 
 resizeButtonInc.addEventListener('click', function () {
-  document.querySelector('.upload-resize-controls-value').value = incImage();
+  imageScale.value = incImage();
   imagePreview.style.transform = incScale();
   resizeValue = incImage();
 });
 
 
 // #теги
-// var hashtagsForm = document.querySelector('.upload-form-hashtags');
+var hashtagsForm = document.querySelector('.upload-form-hashtags');
+var form = document.querySelector('.upload-form');
+var sendButton = document.querySelector('.upload-form-submit');
+
+var getHashtags = function () {
+  var hashtags = hashtagsForm.value;
+  hashtags = hashtags.split(' ');
+  return hashtags;
+};
+var listOfHashtags = getHashtags();
+
+var errorHashtags = function () {
+  sendButton.preventDefault();
+  hashtagsForm.classList.add('upload-message-error');
+};
+
+var checkQuality = function () {
+  if (listOfHashtags.legth > 5) {
+    checkLength();
+  }
+};
+
+var checkLength = function () {
+  var hashtagsLetters = listOfHashtags[i].split('');
+  for (i = 0; i < listOfHashtags.length; i++) {
+    if (hashtagsLetters.length < 20) {
+      checkHashtagSymbol();
+    }
+  }
+};
+
+var checkHashtagSymbol = function () {
+  for (i = 0; i < listOfHashtags.length; i++) {
+    if (listOfHashtags[i].lastIndexOf('#') === 0) {
+      checkRepeat();
+    }
+  }
+};
+
+var checkRepeat = function () {
+  var copyListOfHashtags = listOfHashtags.slice();
+  copyListOfHashtags[i] = copyListOfHashtags[i].toUpperCase();
+  copyListOfHashtags[i] = copyListOfHashtags[i].sort();
+  for (i = 0; i < copyListOfHashtags[i].length; i++) {
+    if (copyListOfHashtags[i] !== copyListOfHashtags[i + 1]) {
+      form.submit();
+    } else {
+      errorHashtags();
+    }
+  }
+};
+
+sendButton.addEventListener('click', function () {
+  checkQuality();
+});
