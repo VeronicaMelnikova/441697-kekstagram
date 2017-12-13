@@ -239,13 +239,17 @@ var getHashtags = function () {
 var listOfHashtags = getHashtags();
 
 var errorHashtags = function () {
-  sendButton.preventDefault();
+  sendButton.addEventListener('click', function (evt) {
+    evt.preventDefault();
+  });
   hashtagsForm.classList.add('upload-message-error');
 };
 
 var checkQuality = function () {
   if (listOfHashtags.legth > 5) {
     checkLength();
+  } else {
+    errorHashtags();
   }
 };
 
@@ -254,6 +258,8 @@ var checkLength = function () {
   for (i = 0; i < listOfHashtags.length; i++) {
     if (hashtagsLetters.length < 20) {
       checkHashtagSymbol();
+    } else {
+      errorHashtags();
     }
   }
 };
@@ -262,6 +268,8 @@ var checkHashtagSymbol = function () {
   for (i = 0; i < listOfHashtags.length; i++) {
     if (listOfHashtags[i].lastIndexOf('#') === 0) {
       checkRepeat();
+    } else {
+      errorHashtags();
     }
   }
 };
