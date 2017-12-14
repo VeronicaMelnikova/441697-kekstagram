@@ -109,7 +109,7 @@ galleryOverlayClose.addEventListener('keydown', function (evt) {
 });
 
 // открывашка
-var generatePreview = function (object) {
+var generateHandler = function (object) {
   return function (evt) {
     evt.preventDefault();
     renderOverlay(object);
@@ -117,13 +117,13 @@ var generatePreview = function (object) {
   };
 };
 
-var onClickPreview = function () {
+var handler = function () {
   for (var i = 0; i < PHOTOS_COUNT; i++) {
-    var fillingPreview = generatePreview(descriptionPhotos[i]);
+    var fillingPreview = generateHandler(descriptionPhotos[i]);
     pictures[i].addEventListener('click', fillingPreview);
   }
 };
-onClickPreview();
+handler();
 
 var uploadOverlay = document.querySelector('.upload-overlay');
 var fileInput = document.querySelector('.upload-input');
@@ -186,14 +186,14 @@ var resizeButtonDec = document.querySelector('.upload-resize-controls-button-dec
 var resizeValue = document.querySelector('.upload-resize-controls-value').value;
 var imageScale = document.querySelector('.upload-resize-controls-value');
 
-var zoomStep = 25;
-var zoomMin = 25;
-var zoomMax = 100;
+var ZOOM_STEP = 25;
+var ZOOM_MIN = 25;
+var ZOOM_MAX = 100;
 
 var getDecrementedValue = function () {
   var resizeValueDec = +resizeValue.slice(0, -1);
-  if (resizeValueDec > zoomMin + zoomStep - 1) {
-    resizeValueDec = resizeValueDec - zoomStep;
+  if (resizeValueDec > ZOOM_MIN + ZOOM_STEP - 1) {
+    resizeValueDec = resizeValueDec - ZOOM_STEP;
   }
   resizeValueDec = resizeValueDec + '%';
   return resizeValueDec;
@@ -215,8 +215,8 @@ resizeButtonDec.addEventListener('click', function () {
 
 var getIncrementedValue = function () {
   var resizeValueInc = +resizeValue.slice(0, -1);
-  if (resizeValueInc < zoomMax - zoomStep + 1) {
-    resizeValueInc = resizeValueInc + zoomStep;
+  if (resizeValueInc < ZOOM_MAX - ZOOM_STEP + 1) {
+    resizeValueInc = resizeValueInc + ZOOM_STEP;
   }
   resizeValueInc = resizeValueInc + '%';
   return resizeValueInc;
@@ -248,9 +248,9 @@ var getHashtags = function () {
   return hashtags.split(' ');
 };
 
-var listOfHashtags = getHashtags();
+var listOfHashtags;
 
-var errorHashtags = function () {
+var showError = function () {
   hashtagsInputElement.classList.add('upload-message-error');
 };
 
@@ -258,12 +258,11 @@ var errorHashtags = function () {
 form.onsubmit = function (evt) {
   evt.preventDefault();
   listOfHashtags = getHashtags();
-  checkTags();
   if (checkTags()) {
     form.submit();
 
   } else {
-    errorHashtags();
+    showError();
   }
 
 };
