@@ -13,6 +13,7 @@ var UPLOAD_RESIZE_MIN = 25;
 var UPLOAD_RESIZE_MAX = 100;
 var MAX_TAGS_COUNT = 5;
 var MAX_TAG_LENGTH = 20;
+var MAX_COMMENT_LENGTH = 140;
 
 var pictureTemplate = document.querySelector('#picture-template').content;
 var picturesElement = document.querySelector('.pictures');
@@ -239,17 +240,22 @@ var getHashtags = function () {
   return hashtags.split(' ');
 };
 
-var showError = function () {
-  hashtagsInputElement.classList.add('upload-message-error');
+var showError = function (element) {
+  element.classList.add('upload-message-error');
 };
 
 form.onsubmit = function (evt) {
   evt.preventDefault();
   listOfHashtags = getHashtags();
   if (checkTags()) {
-    form.submit();
+    if (checkComments()) {
+      form.submit();
+      form.reset();
+    } else {
+      showError(commentsInputElement);
+    }
   } else {
-    showError();
+    showError(hashtagsInputElement);
   }
 };
 
@@ -297,5 +303,24 @@ var checkTagsElements = function () {
 };
 
 var checkTags = function () {
-  return checkTagsQuantity() && checkTagsElements();
+  if (listOfHashtags.length !== 0) {
+    return checkTagsQuantity() && checkTagsElements();
+  }
+  return true;
+};
+
+// валидация комментариев
+var commentsInputElement = form.querySelector('.upload-form-description');
+
+var getCommentsLength = function () {
+  var comments = commentsInputElement.value;
+  return comments.length;
+};
+
+var checkComments = function () {
+  if (getCommentsLength() < MAX_COMMENT_LENGTH) {
+    return true;
+  } else {
+    return false;
+  }
 };
