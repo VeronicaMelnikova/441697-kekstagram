@@ -14,6 +14,7 @@ var UPLOAD_RESIZE_MAX = 100;
 var MAX_TAGS_COUNT = 5;
 var MAX_TAG_LENGTH = 20;
 var MAX_COMMENT_LENGTH = 140;
+var DEFAULT_FILTER = 'effect-none';
 
 var pictureTemplate = document.querySelector('#picture-template').content;
 var picturesElement = document.querySelector('.pictures');
@@ -78,8 +79,8 @@ picturesElement.appendChild(renderPhotos(descriptionPhotos));
 
 var previewOverlay = document.querySelector('.gallery-overlay-preview');
 
-// добавляет описание к изображению
-var addDescriptionToPhoto = function (data) {
+// заполняет оверлей данными
+var fillDataOverlay = function (data) {
   previewOverlay.querySelector('.gallery-overlay-image').src = data.url;
   previewOverlay.querySelector('.likes-count').textContent = data.likes;
   previewOverlay.querySelector('.comments-count').textContent = data.comments.length;
@@ -116,28 +117,28 @@ galleryOverlayClose.addEventListener('keydown', function (evt) {
   }
 });
 
-// вызывает фукции открытия фотографии и заполнения описанием
-var generateHandler = function (object) {
+// создает обработчик события
+var createFilling = function (object) {
   return function (evt) {
     evt.preventDefault();
-    addDescriptionToPhoto(object);
+    fillDataOverlay(object);
     openPopup();
   };
 };
 
-var fillDataHandler = function () {
+var onClickFillOverlay = function () {
   for (var i = 0; i < PHOTOS_COUNT; i++) {
-    var fillingPreview = generateHandler(descriptionPhotos[i]);
+    var fillingPreview = createFilling(descriptionPhotos[i]);
     pictures[i].addEventListener('click', fillingPreview);
   }
 };
-fillDataHandler();
+onClickFillOverlay();
 
 var uploadOverlay = document.querySelector('.upload-overlay');
 var fileInput = document.querySelector('.upload-input');
 var uploadClose = document.querySelector('#upload-cancel');
 var uploadTextarea = document.querySelector('.upload-form-description');
-
+var form = document.querySelector('.upload-form');
 var onOverlayKeyPress = function (evt) {
   var active = document.activeElement;
   if (evt.keyCode === ESC_KEYCODE) {
@@ -150,6 +151,8 @@ var onOverlayKeyPress = function (evt) {
 var closeUploadOverlay = function () {
   uploadOverlay.classList.add('hidden');
   document.removeEventListener('keydown', onOverlayKeyPress);
+  form.reset();
+  changeFilter(DEFAULT_FILTER);
 };
 
 var openUploadOverlay = function () {
@@ -231,13 +234,12 @@ uploadResizeDec.addEventListener('click', onResizeDec);
 
 
 // валидация хештегов
-var form = document.querySelector('.upload-form');
 var hashtagsInputElement = form.querySelector('.upload-form-hashtags');
 var listOfHashtags;
 
 var getHashtags = function () {
   var hashtags = hashtagsInputElement.value;
-  return hashtags.split(' ');
+  return hashtags;
 };
 
 var showError = function (element) {
@@ -246,11 +248,12 @@ var showError = function (element) {
 
 form.onsubmit = function (evt) {
   evt.preventDefault();
-  listOfHashtags = getHashtags();
+  listOfHashtags = getHashtags().split(' ');
   if (checkTags()) {
     if (checkComments()) {
       form.submit();
       form.reset();
+      changeFilter(DEFAULT_FILTER);
     } else {
       showError(commentsInputElement);
     }
@@ -303,10 +306,7 @@ var checkTagsElements = function () {
 };
 
 var checkTags = function () {
-  if (listOfHashtags.length !== 0) {
-    return checkTagsQuantity() && checkTagsElements();
-  }
-  return true;
+  return getHashtags().length === 0 || checkTagsQuantity() && checkTagsElements();
 };
 
 // валидация комментариев
