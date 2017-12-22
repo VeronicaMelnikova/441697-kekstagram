@@ -53,7 +53,7 @@ var renderPicture = function (picture) {
 };
 
 // заполнение массива с описанием фотографий
-var fillingDescriptionPhotos = function () {
+var fillDescriptionPhotos = function () {
   var descriptionPhotos = [];
   for (var i = 0; i < PHOTOS_COUNT; i++) {
     descriptionPhotos[i] = {
@@ -65,7 +65,7 @@ var fillingDescriptionPhotos = function () {
   return descriptionPhotos;
 };
 
-var descriptionPhotos = fillingDescriptionPhotos();
+var descriptionPhotos = fillDescriptionPhotos();
 
 var renderPhotos = function (array) {
   var fragment = document.createDocumentFragment();
@@ -318,9 +318,5 @@ var getCommentsLength = function () {
 };
 
 var checkComments = function () {
-  if (getCommentsLength() < MAX_COMMENT_LENGTH) {
-    return true;
-  } else {
-    return false;
-  }
+  return getCommentsLength() < MAX_COMMENT_LENGTH;
 };
