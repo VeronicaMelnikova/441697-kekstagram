@@ -123,7 +123,7 @@
     element.classList.add('upload-message-error');
   };
 
-  form.onsubmit = function (evt) {
+  form.addEventListener('submit', function (evt) {
     evt.preventDefault();
     listOfHashtags = getHashtags().split(' ');
     if (checkTags()) {
@@ -137,7 +137,7 @@
     } else {
       showError(hashtagsInput);
     }
-  };
+  });
 
   // проверки
   var checkTagsQuantity = function () {
