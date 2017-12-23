@@ -10,6 +10,7 @@
   var MAX_TAG_LENGTH = 20;
   var MAX_COMMENT_LENGTH = 140;
   var DEFAULT_FILTER = 'effect-none';
+  var DEFAULT_SCALE = 100;
   var uploadOverlay = document.querySelector('.upload-overlay');
   var fileInput = document.querySelector('.upload-input');
   var uploadClose = document.querySelector('#upload-cancel');
@@ -30,6 +31,7 @@
     document.removeEventListener('keydown', onOverlayKeyPress);
     form.reset();
     changeFilter(DEFAULT_FILTER);
+    setScaleForUploadImage(DEFAULT_SCALE);
   };
 
   var openUploadOverlay = function () {
@@ -131,6 +133,7 @@
         form.submit();
         form.reset();
         changeFilter(DEFAULT_FILTER);
+        setScaleForUploadImage(DEFAULT_SCALE);
       } else {
         showError(commentsInputElement);
       }
