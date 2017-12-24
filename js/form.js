@@ -16,6 +16,12 @@
   var uploadClose = document.querySelector('#upload-cancel');
   var uploadTextarea = document.querySelector('.upload-form-description');
   var form = document.querySelector('.upload-form');
+  var LEVEL_LINE_LENGTH = 455;
+  var MIN_VALUE = 0;
+  var MAX_VALUE = 100;
+  var effectLevel = form.querySelector('.upload-effect-level');
+  var effectDrag = form.querySelector('.upload-effect-level-pin');
+  var levelValue = form.querySelector('.upload-effect-level-val');
 
   var onOverlayKeyPress = function (evt) {
     var active = document.activeElement;
@@ -59,6 +65,11 @@
     }
     imagePreview.classList.add(filterName);
     currentFilter = filterName;
+    if (currentFilter !== 'effect-none') {
+      effectLevel.classList.remove('hidden');
+    } else {
+      effectLevel.classList.add('hidden');
+    }
   };
 
   uploadEffects.addEventListener('click', function (evt) {
@@ -203,20 +214,11 @@
 
 
   // перетаскивание ползунка фильтра
-  var LEVEL_LINE_LENGTH = 455;
-  var MIN_VALUE = 0;
-  var MAX_VALUE = 100;
-  var effectDrag = form.querySelector('.upload-effect-level-pin');
-  var levelValue = form.querySelector('.upload-effect-level-val');
-  var filterChrome = form.querySelector('.effect-chrome');
-
-
   effectDrag.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
     var startCoords = {
       x: evt.clientX
     };
-
 
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
@@ -226,14 +228,30 @@
       startCoords = {
         x: moveEvt.clientX
       };
-      var dragValue = (effectDrag.offsetLeft - shift.x) * MAX_VALUE / LEVEL_LINE_LENGTH;
 
+      var dragValue = (effectDrag.offsetLeft - shift.x) * MAX_VALUE / LEVEL_LINE_LENGTH;
       if (dragValue > MIN_VALUE && dragValue < MAX_VALUE) {
         effectDrag.style.left = dragValue + '%';
         levelValue.style.width = dragValue + '%';
-        filterChrome.style.filter = 'grayscale(' + dragValue / MAX_VALUE + ')';
+      }
+
+      if (currentFilter === 'effect-chrome') {
+        imagePreview.style.filter = 'grayscale(' + dragValue / MAX_VALUE + ')';
+      }
+      if (currentFilter === 'effect-sepia') {
+        imagePreview.style.filter = 'sepia(' + dragValue / MAX_VALUE + ')';
+      }
+      if (currentFilter === 'effect-marvin') {
+        imagePreview.style.filter = 'invert(' + dragValue + '%' + ')';
+      }
+      if (currentFilter === 'effect-phobos') {
+        imagePreview.style.filter = 'blur(' + (dragValue * 3) / MAX_VALUE + 'px' + ')';
+      }
+      if (currentFilter === 'effect-heat') {
+        imagePreview.style.filter = 'brightness(' + (dragValue * 3) / MAX_VALUE + ')';
       }
     };
+
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
@@ -244,6 +262,5 @@
     form.addEventListener('mousemove', onMouseMove);
     form.addEventListener('mouseup', onMouseUp);
   });
-
 
 })();
