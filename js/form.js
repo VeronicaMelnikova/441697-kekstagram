@@ -201,4 +201,49 @@
     return getCommentsLength() < MAX_COMMENT_LENGTH;
   };
 
+
+  // перетаскивание ползунка фильтра
+  var LEVEL_LINE_LENGTH = 455;
+  var MIN_VALUE = 0;
+  var MAX_VALUE = 100;
+  var effectDrag = form.querySelector('.upload-effect-level-pin');
+  var levelValue = form.querySelector('.upload-effect-level-val');
+  var filterChrome = form.querySelector('.effect-chrome');
+
+
+  effectDrag.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+    var startCoords = {
+      x: evt.clientX
+    };
+
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+      var shift = {
+        x: startCoords.x - moveEvt.clientX
+      };
+      startCoords = {
+        x: moveEvt.clientX
+      };
+      var dragValue = (effectDrag.offsetLeft - shift.x) * MAX_VALUE / LEVEL_LINE_LENGTH;
+
+      if (dragValue > MIN_VALUE && dragValue < MAX_VALUE) {
+        effectDrag.style.left = dragValue + '%';
+        levelValue.style.width = dragValue + '%';
+        filterChrome.style.filter = 'grayscale(' + dragValue / MAX_VALUE + ')';
+      }
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+      form.removeEventListener('mousemove', onMouseMove);
+      form.removeEventListener('mouseup', onMouseUp);
+    };
+
+    form.addEventListener('mousemove', onMouseMove);
+    form.addEventListener('mouseup', onMouseUp);
+  });
+
+
 })();
