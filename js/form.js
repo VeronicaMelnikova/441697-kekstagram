@@ -11,11 +11,30 @@
   var MAX_COMMENT_LENGTH = 140;
   var DEFAULT_FILTER = 'effect-none';
   var DEFAULT_SCALE = 100;
+  var MIN_VALUE = 0;
+  var MAX_VALUE = 100;
+  var DEFAULT_LEVEL = 20;
+  var DEFAULT_LEVEL_PIN = '20%';
   var uploadOverlay = document.querySelector('.upload-overlay');
   var fileInput = document.querySelector('.upload-input');
   var uploadClose = document.querySelector('#upload-cancel');
   var uploadTextarea = document.querySelector('.upload-form-description');
   var form = document.querySelector('.upload-form');
+  var effectLevel = form.querySelector('.upload-effect-level');
+  var effectDrag = form.querySelector('.upload-effect-level-pin');
+  var levelValue = form.querySelector('.upload-effect-level-val');
+  var filterUploadLevelValue = form.querySelector('.upload-effect-level-value');
+  var filterLevelBar = document.querySelector('.upload-effect-level-line');
+  var uploadEffects = document.querySelector('.upload-effect-controls');
+  var imagePreview = document.querySelector('.effect-image-preview');
+  var uploadImagePreview = document.querySelector('.effect-image-preview');
+  var uploadResizeInc = document.querySelector('.upload-resize-controls-button-inc');
+  var uploadResizeDec = document.querySelector('.upload-resize-controls-button-dec');
+  var uploadResizeField = document.querySelector('.upload-resize-controls-value');
+  var commentsInputElement = form.querySelector('.upload-form-description');
+  var hashtagsInput = form.querySelector('.upload-form-hashtags');
+  var listOfHashtags;
+  var currentFilter;
 
   var onOverlayKeyPress = function (evt) {
     var active = document.activeElement;
@@ -49,9 +68,31 @@
 
 
   // применение фильтров
-  var uploadEffects = document.querySelector('.upload-effect-controls');
-  var imagePreview = document.querySelector('.effect-image-preview');
-  var currentFilter;
+  var Filter = {
+    'effect-none': function () {
+      return '';
+    },
+    'effect-chrome': function (dragValue) {
+      return 'grayscale(' + dragValue / 100 + ')';
+    },
+    'effect-sepia': function (dragValue) {
+      return 'sepia(' + dragValue / 100 + ')';
+    },
+    'effect-marvin': function (dragValue) {
+      return 'invert(' + dragValue + '%)';
+    },
+    'effect-phobos': function (dragValue) {
+      return 'blur(' + dragValue / 100 * 3 + 'px)';
+    },
+    'effect-heat': function (dragValue) {
+      return 'brightness(' + dragValue / 100 * 3 + ')';
+    }
+  };
+
+  var changeLevelFilters = function (dragValue) {
+    var levelFilter = Filter[currentFilter](dragValue);
+    imagePreview.style.filter = levelFilter;
+  };
 
   var changeFilter = function (filterName) {
     if (currentFilter) {
@@ -59,23 +100,28 @@
     }
     imagePreview.classList.add(filterName);
     currentFilter = filterName;
+
+    if (currentFilter !== 'effect-none') {
+      effectLevel.classList.remove('hidden');
+    } else {
+      effectLevel.classList.add('hidden');
+    }
   };
+
 
   uploadEffects.addEventListener('click', function (evt) {
     var targetValue = evt.target.value;
     if (evt.target.tagName === 'INPUT') {
       var imageClass = 'effect-' + targetValue;
       changeFilter(imageClass);
+      changeLevelFilters(DEFAULT_LEVEL);
+      effectDrag.style.left = DEFAULT_LEVEL_PIN;
+      levelValue.style.width = DEFAULT_LEVEL_PIN;
     }
   });
 
 
   // изменение маштаба загруженного изображения
-  var uploadImagePreview = document.querySelector('.effect-image-preview');
-  var uploadResizeInc = document.querySelector('.upload-resize-controls-button-inc');
-  var uploadResizeDec = document.querySelector('.upload-resize-controls-button-dec');
-  var uploadResizeField = document.querySelector('.upload-resize-controls-value');
-
   var getScaleValue = function () {
     return parseInt(uploadResizeField.value.slice(0, -1), 10);
   };
@@ -113,9 +159,6 @@
 
 
   // валидация хештегов
-  var hashtagsInput = form.querySelector('.upload-form-hashtags');
-  var listOfHashtags;
-
   var getHashtags = function () {
     var hashtags = hashtagsInput.value;
     return hashtags;
@@ -123,6 +166,10 @@
 
   var showError = function (element) {
     element.classList.add('upload-message-error');
+  };
+
+  var deleteError = function (element) {
+    element.classList.remove('upload-message-error');
   };
 
   form.addEventListener('submit', function (evt) {
@@ -134,6 +181,8 @@
         form.reset();
         changeFilter(DEFAULT_FILTER);
         setScaleForUploadImage(DEFAULT_SCALE);
+        deleteError(commentsInputElement);
+        deleteError(hashtagsInput);
       } else {
         showError(commentsInputElement);
       }
@@ -190,8 +239,6 @@
   };
 
   // валидация комментариев
-  var commentsInputElement = form.querySelector('.upload-form-description');
-
   var getCommentsLength = function () {
     var comments = commentsInputElement.value;
     return comments.length;
@@ -200,5 +247,41 @@
   var checkComments = function () {
     return getCommentsLength() < MAX_COMMENT_LENGTH;
   };
+
+
+  // перетаскивание ползунка фильтра
+  effectDrag.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+    var startCoords = {
+      x: evt.clientX
+    };
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+      var shift = {
+        x: startCoords.x - moveEvt.clientX
+      };
+      startCoords = {
+        x: moveEvt.clientX
+      };
+
+      var dragValue = (effectDrag.offsetLeft - shift.x) * MAX_VALUE / filterLevelBar.offsetWidth;
+      if (dragValue > MIN_VALUE && dragValue < MAX_VALUE) {
+        effectDrag.style.left = dragValue + '%';
+        levelValue.style.width = dragValue + '%';
+        changeLevelFilters(dragValue);
+        filterUploadLevelValue.value = dragValue.toFixed();
+      }
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
 
 })();
