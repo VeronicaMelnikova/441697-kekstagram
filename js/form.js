@@ -11,7 +11,6 @@
   var MAX_COMMENT_LENGTH = 140;
   var DEFAULT_FILTER = 'effect-none';
   var DEFAULT_SCALE = 100;
-  var LEVEL_LINE_LENGTH = 455;
   var MIN_VALUE = 0;
   var MAX_VALUE = 100;
   var DEFAULT_LEVEL = 20;
@@ -25,6 +24,7 @@
   var effectDrag = form.querySelector('.upload-effect-level-pin');
   var levelValue = form.querySelector('.upload-effect-level-val');
   var filterUploadLevelValue = form.querySelector('.upload-effect-level-value');
+  var filterLevelBar = document.querySelector('.upload-effect-level-line');
   var uploadEffects = document.querySelector('.upload-effect-controls');
   var imagePreview = document.querySelector('.effect-image-preview');
   var uploadImagePreview = document.querySelector('.effect-image-preview');
@@ -68,6 +68,32 @@
 
 
   // применение фильтров
+  var Filter = {
+    'effect-none': function () {
+      return '';
+    },
+    'effect-chrome': function (dragValue) {
+      return 'grayscale(' + dragValue / 100 + ')';
+    },
+    'effect-sepia': function (dragValue) {
+      return 'sepia(' + dragValue / 100 + ')';
+    },
+    'effect-marvin': function (dragValue) {
+      return 'invert(' + dragValue + '%)';
+    },
+    'effect-phobos': function (dragValue) {
+      return 'blur(' + dragValue / 100 * 3 + 'px)';
+    },
+    'effect-heat': function (dragValue) {
+      return 'brightness(' + dragValue / 100 * 3 + ')';
+    }
+  };
+
+  var changeLevelFilters = function (dragValue) {
+    var levelFilter = Filter[currentFilter](dragValue);
+    imagePreview.style.filter = levelFilter;
+  };
+
   var changeFilter = function (filterName) {
     if (currentFilter) {
       imagePreview.classList.remove(currentFilter);
@@ -224,27 +250,6 @@
 
 
   // перетаскивание ползунка фильтра
-  var changeLevelFilters = function (value) {
-    if (currentFilter === 'effect-none') {
-      imagePreview.style.filter = '';
-    }
-    if (currentFilter === 'effect-chrome') {
-      imagePreview.style.filter = 'grayscale(' + value / MAX_VALUE + ')';
-    }
-    if (currentFilter === 'effect-sepia') {
-      imagePreview.style.filter = 'sepia(' + value / MAX_VALUE + ')';
-    }
-    if (currentFilter === 'effect-marvin') {
-      imagePreview.style.filter = 'invert(' + value + '%' + ')';
-    }
-    if (currentFilter === 'effect-phobos') {
-      imagePreview.style.filter = 'blur(' + (value * 3) / MAX_VALUE + 'px' + ')';
-    }
-    if (currentFilter === 'effect-heat') {
-      imagePreview.style.filter = 'brightness(' + (value * 3) / MAX_VALUE + ')';
-    }
-  };
-
   effectDrag.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
     var startCoords = {
@@ -260,23 +265,23 @@
         x: moveEvt.clientX
       };
 
-      var dragValue = (effectDrag.offsetLeft - shift.x) * MAX_VALUE / LEVEL_LINE_LENGTH;
+      var dragValue = (effectDrag.offsetLeft - shift.x) * MAX_VALUE / filterLevelBar.offsetWidth;
       if (dragValue > MIN_VALUE && dragValue < MAX_VALUE) {
         effectDrag.style.left = dragValue + '%';
         levelValue.style.width = dragValue + '%';
+        changeLevelFilters(dragValue);
+        filterUploadLevelValue.value = dragValue.toFixed();
       }
-      changeLevelFilters(dragValue);
-      filterUploadLevelValue.value = dragValue.toFixed();
     };
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-      form.removeEventListener('mousemove', onMouseMove);
-      form.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
     };
 
-    form.addEventListener('mousemove', onMouseMove);
-    form.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   });
 
 })();
