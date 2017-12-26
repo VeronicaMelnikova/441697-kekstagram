@@ -3,9 +3,6 @@
 (function () {
 
   var ESC_KEYCODE = 27;
-  var UPLOAD_RESIZE_STEP = 25;
-  var UPLOAD_RESIZE_MIN = 25;
-  var UPLOAD_RESIZE_MAX = 100;
   var MAX_TAGS_COUNT = 5;
   var MAX_TAG_LENGTH = 20;
   var MAX_COMMENT_LENGTH = 140;
@@ -28,11 +25,9 @@
   var uploadEffects = document.querySelector('.upload-effect-controls');
   var imagePreview = document.querySelector('.effect-image-preview');
   var uploadImagePreview = document.querySelector('.effect-image-preview');
-  var uploadResizeInc = document.querySelector('.upload-resize-controls-button-inc');
-  var uploadResizeDec = document.querySelector('.upload-resize-controls-button-dec');
-  var uploadResizeField = document.querySelector('.upload-resize-controls-value');
   var commentsInputElement = form.querySelector('.upload-form-description');
   var hashtagsInput = form.querySelector('.upload-form-hashtags');
+  var scaleElement = document.querySelector('.upload-resize-controls');
   var listOfHashtags;
   var currentFilter;
 
@@ -122,40 +117,11 @@
 
 
   // изменение маштаба загруженного изображения
-  var getScaleValue = function () {
-    return parseInt(uploadResizeField.value.slice(0, -1), 10);
-  };
-
-  var setScaleValue = function (value) {
-    uploadResizeField.value = value + '%';
-  };
-
-  var getScaleValueInRange = function (value) {
-    return Math.min(UPLOAD_RESIZE_MAX, Math.max(UPLOAD_RESIZE_MIN, value));
-  };
-
   var setScaleForUploadImage = function (scale) {
     uploadImagePreview.style.transform = 'scale(' + (scale / 100) + ')';
   };
 
-  var changeScale = function (step) {
-    var currentScaleValue = getScaleValue();
-    var newScaleValue = getScaleValueInRange(currentScaleValue + step);
-
-    setScaleValue(newScaleValue);
-    setScaleForUploadImage(newScaleValue);
-  };
-
-  var onResizeInc = function () {
-    changeScale(UPLOAD_RESIZE_STEP);
-  };
-
-  var onResizeDec = function () {
-    changeScale(-UPLOAD_RESIZE_STEP);
-  };
-
-  uploadResizeInc.addEventListener('click', onResizeInc);
-  uploadResizeDec.addEventListener('click', onResizeDec);
+  window.initializeScale(scaleElement, setScaleForUploadImage);
 
 
   // валидация хештегов
