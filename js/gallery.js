@@ -20,4 +20,8 @@
   };
   setPicturesClickHandlers();
 
+  window.gallery = {
+    descriptionPhotos: window.download
+  };
+
 })();

@@ -881,3 +881,42 @@ input[type=radio]:checked + .upload-effect-label .upload-effect-preview {
 .footer-social-item-vk {
   background-position: -84px 0;
 }
+
+.pop-up-failure {
+  display: none;
+  flex-wrap: wrap;
+  justify-content: center;
+  top: 20%;
+  left: 50%;
+  margin-left: -160px;
+  position: fixed;
+  width: 320px;
+  text-transform: uppercase;
+  background-color: #ffffff;
+  z-index: 10;
+
+  font: 14px "Open Sans";
+  line-height: 1.44;
+  color: #000000;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.pop-up-failure-show {
+  display: flex;
+}
+
+.pop-up-failure__title {
+  margin-top: 46px;
+  margin-bottom: 0;
+
+  font-weight: 900;
+  color: #ff0000;
+}
+
+.pop-up-failure__description {
+  margin-top: 40px;
+  margin-bottom: 30px;
+  width: 238px;
+  text-align: center;
+}

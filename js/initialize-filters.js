@@ -2,10 +2,11 @@
 
 (function () {
 
+  var MIN_VALUE = 0;
+  var MAX_VALUE = 100;
+
   window.initializeFilters = function (uploadEffectElement, changeLevelFilters) {
 
-    var MIN_VALUE = 0;
-    var MAX_VALUE = 100;
     var effectDrag = uploadEffectElement.querySelector('.upload-effect-level-pin');
     var filterLevelBar = uploadEffectElement.querySelector('.upload-effect-level-line');
     var levelValue = uploadEffectElement.querySelector('.upload-effect-level-val');

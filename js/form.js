@@ -110,6 +110,10 @@
 
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
+    window.upload(new FormData(form), function () {
+      form.classList.add('hidden');
+    });
+
     listOfHashtags = getHashtags().split(' ');
     if (checkTags()) {
       if (checkComments()) {
