@@ -3,7 +3,6 @@
 (function () {
 
   var pictureTemplate = document.querySelector('#picture-template').content;
-  var picturesElement = document.querySelector('.pictures');
 
   var renderPicture = function (picture) {
     var pictureElement = pictureTemplate.cloneNode(true);
@@ -22,10 +21,7 @@
     return fragment;
   };
 
-
-  picturesElement.appendChild(renderPhotos(window.gallery.descriptionPhotos));
-
   window.picture = {
-    'renderPhotos': renderPhotos()
+    renderPhotos: renderPhotos
   };
 })();

@@ -3,6 +3,7 @@
 (function () {
 
   var pictures = document.querySelectorAll('.picture');
+  var picturesElement = document.querySelector('.pictures');
 
   var getPictureClickHandler = function (object) {
     return function (evt) {
@@ -12,16 +13,20 @@
     };
   };
 
+  window.backend.load(function (photos) {
+    window.data = {
+      descriptionPhotos: photos
+    };
+    setPicturesClickHandlers();
+  }, console.error);
+
   var setPicturesClickHandlers = function () {
     for (var i = 0; i < pictures.length; i++) {
       var onPictureClick = getPictureClickHandler(window.data.descriptionPhotos[i]);
       pictures[i].addEventListener('click', onPictureClick);
     }
   };
-  setPicturesClickHandlers();
 
-  window.gallery = {
-    descriptionPhotos: window.download
-  };
+  picturesElement.appendChild(window.picture.renderPhotos(window.data.descriptionPhotos));
 
 })();

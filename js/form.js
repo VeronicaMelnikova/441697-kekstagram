@@ -108,21 +108,31 @@
     element.classList.remove('upload-message-error');
   };
 
+  var resetForm = function () {
+    form.reset();
+    changeFilter(DEFAULT_FILTER);
+    setScaleForUploadImage(DEFAULT_SCALE);
+    deleteError(commentsInputElement);
+    deleteError(hashtagsInput);
+  };
+
+  var errorPopUp = document.querySelector('#error-template');
+  var onError = function () {
+    errorPopUp.classList.remove('hidden');
+    setTimeout(function () {
+      errorPopUp.classList.add('hidden');
+    }, 2000);
+  };
+
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    window.upload(new FormData(form), function () {
-      form.classList.add('hidden');
-    });
 
     listOfHashtags = getHashtags().split(' ');
     if (checkTags()) {
       if (checkComments()) {
-        form.submit();
-        form.reset();
-        changeFilter(DEFAULT_FILTER);
-        setScaleForUploadImage(DEFAULT_SCALE);
-        deleteError(commentsInputElement);
-        deleteError(hashtagsInput);
+        window.upload(new FormData(form), function () {
+          form.classList.add('hidden');
+        }, onError, resetForm);
       } else {
         showError(commentsInputElement);
       }
