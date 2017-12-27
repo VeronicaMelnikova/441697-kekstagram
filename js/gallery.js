@@ -18,6 +18,7 @@
       descriptionPhotos: photos
     };
     setPicturesClickHandlers();
+    picturesElement.appendChild(window.picture.renderPhotos(window.data.descriptionPhotos));
   }, console.error);
 
   var setPicturesClickHandlers = function () {
@@ -27,6 +28,5 @@
     }
   };
 
-  picturesElement.appendChild(window.picture.renderPhotos(window.data.descriptionPhotos));
 
 })();
