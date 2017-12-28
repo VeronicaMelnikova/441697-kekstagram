@@ -150,9 +150,17 @@
   </a>
 </template>
 
-<script src="js/data.js"></script>
+<template id="error-template">
+<div class="pop-up-error hidden">
+  <p class="pop-up-error__title">Что-то пошло не так!</p>
+    <p class="pop-up-error__description">Произошла ошибка соединения</p>
+</div>
+</template>
+
+<script src="js/backend.js"></script>
 <script src="js/picture.js"></script>
 <script src="js/preview.js"></script>
+<script src="js/error.js"></script>
 <script src="js/gallery.js"></script>
 <script src="js/initialize-scale.js"></script>
 <script src="js/initialize-filters.js"></script>

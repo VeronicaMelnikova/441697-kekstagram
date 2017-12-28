@@ -108,17 +108,23 @@
     element.classList.remove('upload-message-error');
   };
 
+  var resetForm = function () {
+    form.reset();
+    changeFilter(DEFAULT_FILTER);
+    setScaleForUploadImage(DEFAULT_SCALE);
+    deleteError(commentsInputElement);
+    deleteError(hashtagsInput);
+  };
+
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
     listOfHashtags = getHashtags().split(' ');
     if (checkTags()) {
       if (checkComments()) {
-        form.submit();
-        form.reset();
-        changeFilter(DEFAULT_FILTER);
-        setScaleForUploadImage(DEFAULT_SCALE);
-        deleteError(commentsInputElement);
-        deleteError(hashtagsInput);
+        window.backend.save(new FormData(form), function () {
+          uploadOverlay.classList.add('hidden');
+          resetForm();
+        }, window.onError);
       } else {
         showError(commentsInputElement);
       }
