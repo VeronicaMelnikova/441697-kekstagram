@@ -6,13 +6,13 @@
   var TIMEOUT = 10000;
   var SUCCESS_MESSAGE = 200;
 
-  var setup = function (onSuccess, onError) {
+  var setup = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
       if (xhr.status === SUCCESS_MESSAGE) {
-        onSuccess(xhr.response);
+        onLoad(xhr.response);
       } else {
         onError(xhr.response);
       }
@@ -30,14 +30,14 @@
   };
 
   window.backend = {
-    save: function (data, onSuccess, onError) {
-      var xhr = setup(onSuccess, onError);
+    save: function (data, onLoad, onError) {
+      var xhr = setup(onLoad, onError);
 
       xhr.open('POST', SERVER_URL);
       xhr.send(data);
     },
-    load: function (onSuccess, onError) {
-      var xhr = setup(onSuccess, onError);
+    load: function (onLoad, onError) {
+      var xhr = setup(onLoad, onError);
 
       xhr.open('GET', SERVER_URL + '/data');
       xhr.send();

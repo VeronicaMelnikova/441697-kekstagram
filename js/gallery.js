@@ -17,8 +17,8 @@
     window.data = {
       descriptionPhotos: photos
     };
-    setPicturesClickHandlers();
     picturesElement.appendChild(window.picture.renderPhotos(window.data.descriptionPhotos));
+    setPicturesClickHandlers();
   }, console.error);
 
   var setPicturesClickHandlers = function () {

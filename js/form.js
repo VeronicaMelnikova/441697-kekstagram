@@ -126,13 +126,13 @@
 
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
-
     listOfHashtags = getHashtags().split(' ');
     if (checkTags()) {
       if (checkComments()) {
-        window.upload(new FormData(form), function () {
-          form.classList.add('hidden');
-        }, onError, resetForm);
+        window.backend.save(new FormData(form), function () {
+          uploadOverlay.classList.add('hidden');
+          resetForm();
+        }, onError);
       } else {
         showError(commentsInputElement);
       }
