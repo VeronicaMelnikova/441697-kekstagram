@@ -116,14 +116,6 @@
     deleteError(hashtagsInput);
   };
 
-  var errorPopUp = document.querySelector('#error-template');
-  var onError = function () {
-    errorPopUp.classList.remove('hidden');
-    setTimeout(function () {
-      errorPopUp.classList.add('hidden');
-    }, 2000);
-  };
-
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
     listOfHashtags = getHashtags().split(' ');
@@ -132,7 +124,7 @@
         window.backend.save(new FormData(form), function () {
           uploadOverlay.classList.add('hidden');
           resetForm();
-        }, onError);
+        }, window.onError);
       } else {
         showError(commentsInputElement);
       }
