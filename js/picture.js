@@ -13,15 +13,17 @@
 
     return pictureElement;
   };
-  var renderPhotos = function (array) {
+  var render = function (array) {
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < array.length; i++) {
       fragment.appendChild(renderPicture(array[i]));
     }
+    document.querySelector('.pictures').appendChild(fragment);
     return fragment;
   };
 
   window.picture = {
-    renderPhotos: renderPhotos
+    render: render
   };
+
 })();

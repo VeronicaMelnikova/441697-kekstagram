@@ -4,14 +4,14 @@
 
   var SERVER_URL = 'https://js.dump.academy/kekstagram';
   var TIMEOUT = 10000;
-  var SUCCESS_MESSAGE = 200;
+  var SUCCESS_CODE = 200;
 
   var setup = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === SUCCESS_MESSAGE) {
+      if (xhr.status === SUCCESS_CODE) {
         onLoad(xhr.response);
       } else {
         onError(xhr.response);

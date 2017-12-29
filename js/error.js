@@ -2,12 +2,22 @@
 
 (function () {
 
-  var errorPopUp = document.querySelector('#error-template');
+  var TIMEOUT = 2000;
+  var errorTemplate = document.querySelector('#error-template');
+  var errorContainer = document.querySelector('.error-container');
+
+
+  var renderError = function () {
+    var errorElement = errorTemplate.cloneNode(true);
+    return errorElement;
+  };
 
   window.onError = function () {
-    errorPopUp.classList.remove('hidden');
+    errorContainer.appendChild(renderError());
+    var errorPopup = document.querySelector('.pop-up-error');
+    errorPopup.classList.remove('hidden');
     setTimeout(function () {
-      errorPopUp.classList.add('hidden');
-    }, 2000);
+      errorPopup.classList.add('hidden');
+    }, TIMEOUT);
   };
 })();
