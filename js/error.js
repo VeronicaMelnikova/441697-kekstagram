@@ -14,10 +14,9 @@
 
   window.onError = function () {
     errorContainer.appendChild(renderError());
-    var errorPopup = document.querySelector('.pop-up-error');
-    errorPopup.classList.remove('hidden');
+
     setTimeout(function () {
-      errorPopup.classList.add('hidden');
+
     }, TIMEOUT);
   };
 })();

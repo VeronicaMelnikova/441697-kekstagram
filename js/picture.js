@@ -2,6 +2,7 @@
 
 (function () {
 
+  var picturesContainer = document.querySelector('.pictures');
   var pictureTemplate = document.querySelector('#picture-template').content;
 
   var renderPicture = function (picture) {
@@ -18,7 +19,7 @@
     for (var i = 0; i < array.length; i++) {
       fragment.appendChild(renderPicture(array[i]));
     }
-    document.querySelector('.pictures').appendChild(fragment);
+    picturesContainer.appendChild(fragment);
     return fragment;
   };
 

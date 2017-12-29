@@ -2,9 +2,11 @@
 
 (function () {
 
-  var picturesElement = document.querySelector('.pictures');
-  var children = document.querySelector('.pictures').children;
-  var filtersSorting = document.querySelector('.filters');
+  var DEBOUNCE_INTERVAL = 500;
+  var lastTimeout;
+
+  var picturesContainer = document.querySelector('.pictures');
+  var filters = document.querySelector('.filters');
   var descriptionPhotos = [];
 
   var getPictureClickHandler = function (object) {
@@ -17,9 +19,9 @@
 
   window.backend.load(function (photos) {
     descriptionPhotos = photos;
-    picturesElement.appendChild(window.picture.render(descriptionPhotos));
+    picturesContainer.appendChild(window.picture.render(descriptionPhotos));
     setPicturesClickHandlers(descriptionPhotos);
-    filtersSorting.classList.remove('filters-inactive');
+    filters.classList.remove('filters-inactive');
   }, window.onError);
 
   var setPicturesClickHandlers = function (photos) {
@@ -31,9 +33,9 @@
   };
 
 
-  var changePicturesContent = function () {
-    Array.from(children).forEach(function (child) {
-      document.querySelector('.pictures').removeChild(child);
+  var removePicturesContent = function () {
+    Array.from(picturesContainer.children).forEach(function (child) {
+      picturesContainer.removeChild(child);
     });
   };
 
@@ -52,7 +54,7 @@
     if (filter.id === 'filter-random') {
       updatedPhotos = randomSorting();
     }
-    debounce(changePicturesContent());
+    debounce(removePicturesContent());
     window.picture.render(updatedPhotos);
     setPicturesClickHandlers(updatedPhotos);
   };
@@ -60,26 +62,14 @@
   var sortingByLikes = function () {
     var photosCopy = descriptionPhotos.slice();
     return photosCopy.sort(function (firstPhoto, secondPhoto) {
-      if (firstPhoto.likes < secondPhoto.likes) {
-        return 1;
-      } else if (firstPhoto.likes > secondPhoto.likes) {
-        return -1;
-      } else {
-        return 0;
-      }
+      return secondPhoto.likes - firstPhoto.likes;
     });
   };
 
   var sortingByComments = function () {
     var photosCopy = descriptionPhotos.slice();
     return photosCopy.sort(function (firstPhoto, secondPhoto) {
-      if (firstPhoto.comments.length < secondPhoto.comments.length) {
-        return 1;
-      } else if (firstPhoto.comments.length > secondPhoto.comments.length) {
-        return -1;
-      } else {
-        return 0;
-      }
+      return secondPhoto.comments.length - firstPhoto.comments.length;
     });
   };
 
@@ -95,9 +85,12 @@
   };
 
   var debounce = function (action) {
-    setTimeout(action, 500);
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = setTimeout(action, DEBOUNCE_INTERVAL);
   };
 
-  document.querySelector('.filters').addEventListener('focusin', updatePhotos);
+  document.querySelector('.filters').addEventListener('click', updatePhotos);
 
 })();
