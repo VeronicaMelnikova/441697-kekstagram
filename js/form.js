@@ -5,32 +5,33 @@
   var ESC_KEYCODE = 27;
   var MAX_TAGS_COUNT = 5;
   var MAX_TAG_LENGTH = 20;
+  var MIN_TAG_LENGTH = 2;
   var MAX_COMMENT_LENGTH = 140;
   var DEFAULT_FILTER = 'effect-none';
   var DEFAULT_SCALE = 100;
   var DEFAULT_LEVEL = 20;
-  var DEFAULT_LEVEL_PIN = '20%';
+  var MAX_BLUR = 3;
+  var MAX_BRIGHTNESS = 3;
+
   var uploadOverlay = document.querySelector('.upload-overlay');
   var fileInput = document.querySelector('.upload-input');
   var uploadClose = document.querySelector('#upload-cancel');
-  var uploadTextarea = document.querySelector('.upload-form-description');
+  var uploadDescription = document.querySelector('.upload-form-description');
   var form = document.querySelector('.upload-form');
   var effectLevel = form.querySelector('.upload-effect-level');
   var effectDrag = form.querySelector('.upload-effect-level-pin');
   var levelValue = form.querySelector('.upload-effect-level-val');
   var uploadEffects = document.querySelector('.upload-effect-controls');
-  var imagePreview = document.querySelector('.effect-image-preview');
   var uploadImagePreview = document.querySelector('.effect-image-preview');
-  var commentsInputElement = form.querySelector('.upload-form-description');
   var hashtagsInput = form.querySelector('.upload-form-hashtags');
-  var scaleElement = document.querySelector('.upload-resize-controls');
+  var scaleControl = document.querySelector('.upload-resize-controls');
   var listOfHashtags;
   var currentFilter;
 
   var onOverlayKeyPress = function (evt) {
     var active = document.activeElement;
     if (evt.keyCode === ESC_KEYCODE) {
-      if (active !== uploadTextarea) {
+      if (active !== uploadDescription) {
         closeUploadOverlay();
       }
     }
@@ -42,6 +43,7 @@
     form.reset();
     changeFilter(DEFAULT_FILTER);
     setScaleForUploadImage(DEFAULT_SCALE);
+    changeLevelFilters(DEFAULT_LEVEL);
   };
 
   var openUploadOverlay = function () {
@@ -61,9 +63,9 @@
   // применение фильтров
   var changeFilter = function (filterName) {
     if (currentFilter) {
-      imagePreview.classList.remove(currentFilter);
+      uploadImagePreview.classList.remove(currentFilter);
     }
-    imagePreview.classList.add(filterName);
+    uploadImagePreview.classList.add(filterName);
     currentFilter = filterName;
 
     if (currentFilter !== 'effect-none') {
@@ -80,8 +82,8 @@
       var imageClass = 'effect-' + targetValue;
       changeFilter(imageClass);
       changeLevelFilters(DEFAULT_LEVEL);
-      effectDrag.style.left = DEFAULT_LEVEL_PIN;
-      levelValue.style.width = DEFAULT_LEVEL_PIN;
+      effectDrag.style.left = DEFAULT_LEVEL + '%';
+      levelValue.style.width = DEFAULT_LEVEL + '%';
     }
   });
 
@@ -91,7 +93,7 @@
     uploadImagePreview.style.transform = 'scale(' + (scale / 100) + ')';
   };
 
-  window.initializeScale(scaleElement, setScaleForUploadImage);
+  window.initializeScale(scaleControl, setScaleForUploadImage);
 
 
   // валидация хештегов
@@ -112,7 +114,7 @@
     form.reset();
     changeFilter(DEFAULT_FILTER);
     setScaleForUploadImage(DEFAULT_SCALE);
-    deleteError(commentsInputElement);
+    deleteError(uploadDescription);
     deleteError(hashtagsInput);
   };
 
@@ -126,7 +128,7 @@
           resetForm();
         }, window.onError);
       } else {
-        showError(commentsInputElement);
+        showError(uploadDescription);
       }
     } else {
       showError(hashtagsInput);
@@ -139,7 +141,7 @@
   };
 
   var checkTagsLength = function (tag) {
-    return tag.length > MAX_TAG_LENGTH || tag.length < 2;
+    return tag.length > MAX_TAG_LENGTH || tag.length < MIN_TAG_LENGTH;
   };
 
   var checkHashIndex = function (tag) {
@@ -182,7 +184,7 @@
 
   // валидация комментариев
   var getCommentsLength = function () {
-    var comments = commentsInputElement.value;
+    var comments = uploadDescription.value;
     return comments.length;
   };
 
@@ -194,7 +196,7 @@
   // перетаскивание ползунка фильтра
   var uploadEffectElement = form.querySelector('.upload-effect-level');
 
-  var Filter = {
+  var filter = {
     'effect-none': function () {
       return '';
     },
@@ -208,16 +210,16 @@
       return 'invert(' + dragValue + '%)';
     },
     'effect-phobos': function (dragValue) {
-      return 'blur(' + dragValue / 100 * 3 + 'px)';
+      return 'blur(' + dragValue / 100 * MAX_BLUR + 'px)';
     },
     'effect-heat': function (dragValue) {
-      return 'brightness(' + dragValue / 100 * 3 + ')';
+      return 'brightness(' + dragValue / 100 * MAX_BRIGHTNESS + ')';
     }
   };
 
   var changeLevelFilters = function (dragValue) {
-    var levelFilter = Filter[currentFilter](dragValue);
-    imagePreview.style.filter = levelFilter;
+    var levelFilter = filter[currentFilter](dragValue);
+    uploadImagePreview.style.filter = levelFilter;
   };
 
   window.initializeFilters(uploadEffectElement, changeLevelFilters);
