@@ -8,15 +8,13 @@
 
 
   var renderError = function () {
-    var errorElement = errorTemplate.cloneNode(true);
+    var errorElement = errorTemplate.content.cloneNode(true);
     return errorElement;
   };
 
   window.onError = function () {
     errorContainer.appendChild(renderError());
-
     setTimeout(function () {
-
     }, TIMEOUT);
   };
 })();

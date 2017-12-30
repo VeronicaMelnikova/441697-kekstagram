@@ -54,7 +54,7 @@
     if (filter.id === 'filter-random') {
       updatedPhotos = randomSorting();
     }
-    debounce(removePicturesContent());
+    removePicturesContent();
     window.picture.render(updatedPhotos);
     setPicturesClickHandlers(updatedPhotos);
   };
@@ -91,6 +91,6 @@
     lastTimeout = setTimeout(action, DEBOUNCE_INTERVAL);
   };
 
-  document.querySelector('.filters').addEventListener('click', updatePhotos);
+  document.querySelector('.filters').addEventListener('click', debounce(updatePhotos));
 
 })();
