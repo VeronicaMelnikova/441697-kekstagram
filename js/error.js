@@ -12,10 +12,8 @@
     return errorElement;
   };
 
-  var errorPopup = renderError();
-
   window.onError = function () {
-    errorContainer.appendChild(errorPopup);
+    errorContainer.appendChild(renderError());
     setTimeout(function () {
       errorContainer.innerHTML = '';
     }, TIMEOUT);
