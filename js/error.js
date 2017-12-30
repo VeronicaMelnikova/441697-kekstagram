@@ -12,10 +12,12 @@
     return errorElement;
   };
 
+  var errorPopup = renderError();
+
   window.onError = function () {
-    errorContainer.appendChild(renderError());
+    errorContainer.appendChild(errorPopup);
     setTimeout(function () {
-      errorContainer.removeChild(renderError());
+      errorContainer.removeChild(errorPopup);
     }, TIMEOUT);
   };
 })();
