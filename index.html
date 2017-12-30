@@ -140,6 +140,8 @@
   </div>
 </div>
 
+<div class="error-container"></div>
+
 <template id="picture-template" style="display: none">
   <a href="#" class="picture" tabindex="0">
     <img src="" width="182" height="182">
@@ -151,16 +153,16 @@
 </template>
 
 <template id="error-template">
-<div class="pop-up-error hidden">
+<div class="pop-up-error">
   <p class="pop-up-error__title">Что-то пошло не так!</p>
     <p class="pop-up-error__description">Произошла ошибка соединения</p>
 </div>
 </template>
 
+<script src="js/error.js"></script>
 <script src="js/backend.js"></script>
 <script src="js/picture.js"></script>
 <script src="js/preview.js"></script>
-<script src="js/error.js"></script>
 <script src="js/gallery.js"></script>
 <script src="js/initialize-scale.js"></script>
 <script src="js/initialize-filters.js"></script>

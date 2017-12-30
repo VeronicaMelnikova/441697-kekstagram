@@ -2,12 +2,22 @@
 
 (function () {
 
-  var errorPopUp = document.querySelector('#error-template');
+  var TIMEOUT = 2000;
+  var errorTemplate = document.querySelector('#error-template');
+  var errorContainer = document.querySelector('.error-container');
+
+
+  var renderError = function () {
+    var errorElement = errorTemplate.content.cloneNode(true);
+    return errorElement;
+  };
+
+  var errorPopup = renderError();
 
   window.onError = function () {
-    errorPopUp.classList.remove('hidden');
+    errorContainer.appendChild(errorPopup);
     setTimeout(function () {
-      errorPopUp.classList.add('hidden');
-    }, 2000);
+      errorContainer.innerHTML = '';
+    }, TIMEOUT);
   };
 })();

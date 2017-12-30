@@ -2,6 +2,7 @@
 
 (function () {
 
+  var picturesContainer = document.querySelector('.pictures');
   var pictureTemplate = document.querySelector('#picture-template').content;
 
   var renderPicture = function (picture) {
@@ -13,15 +14,17 @@
 
     return pictureElement;
   };
-  var renderPhotos = function (array) {
+  var render = function (array) {
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < array.length; i++) {
       fragment.appendChild(renderPicture(array[i]));
     }
+    picturesContainer.appendChild(fragment);
     return fragment;
   };
 
   window.picture = {
-    renderPhotos: renderPhotos
+    render: render
   };
+
 })();
