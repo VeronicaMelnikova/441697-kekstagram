@@ -15,6 +15,7 @@
   window.onError = function () {
     errorContainer.appendChild(renderError());
     setTimeout(function () {
+      errorContainer.removeChild(renderError());
     }, TIMEOUT);
   };
 })();

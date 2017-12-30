@@ -91,6 +91,12 @@
     lastTimeout = setTimeout(action, DEBOUNCE_INTERVAL);
   };
 
-  document.querySelector('.filters').addEventListener('click', debounce(updatePhotos));
+  document.querySelector('.filters').addEventListener('click', function (evt) {
+    if (evt.target.tagName === 'INPUT') {
+      debounce(function () {
+        updatePhotos(evt);
+      });
+    }
+  });
 
 })();
