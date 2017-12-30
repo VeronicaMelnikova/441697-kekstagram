@@ -17,7 +17,7 @@
   window.onError = function () {
     errorContainer.appendChild(errorPopup);
     setTimeout(function () {
-      errorContainer.removeChild(errorPopup);
+      errorContainer.innerHTML = '';
     }, TIMEOUT);
   };
 })();
