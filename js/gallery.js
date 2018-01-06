@@ -43,41 +43,41 @@
     var filter = evt.target;
     var updatedPhotos;
     if (filter.id === 'filter-popular') {
-      updatedPhotos = sortingByLikes();
+      updatedPhotos = sortByLikes();
     }
     if (filter.id === 'filter-discussed') {
-      updatedPhotos = sortingByComments();
+      updatedPhotos = sortByComments();
     }
     if (filter.id === 'filter-recommend') {
-      updatedPhotos = defaultSorting();
+      updatedPhotos = sortByDefault();
     }
     if (filter.id === 'filter-random') {
-      updatedPhotos = randomSorting();
+      updatedPhotos = sortByRandom();
     }
     removePicturesContent();
     window.picture.render(updatedPhotos);
     setPicturesClickHandlers(updatedPhotos);
   };
 
-  var sortingByLikes = function () {
+  var sortByLikes = function () {
     var photosCopy = descriptionPhotos.slice();
     return photosCopy.sort(function (firstPhoto, secondPhoto) {
       return secondPhoto.likes - firstPhoto.likes;
     });
   };
 
-  var sortingByComments = function () {
+  var sortByComments = function () {
     var photosCopy = descriptionPhotos.slice();
     return photosCopy.sort(function (firstPhoto, secondPhoto) {
       return secondPhoto.comments.length - firstPhoto.comments.length;
     });
   };
 
-  var defaultSorting = function () {
+  var sortByDefault = function () {
     return descriptionPhotos;
   };
 
-  var randomSorting = function () {
+  var sortByRandom = function () {
     var photosCopy = descriptionPhotos.slice();
     return photosCopy.sort(function () {
       return (Math.random() - 0.5);

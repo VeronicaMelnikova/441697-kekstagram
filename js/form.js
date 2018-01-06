@@ -137,7 +137,7 @@
 
   // проверки
   var checkTagsQuantity = function () {
-    return listOfHashtags.length < MAX_TAGS_COUNT;
+    return listOfHashtags.length < MAX_TAGS_COUNT + 1;
   };
 
   var checkTagsLength = function (tag) {
@@ -189,7 +189,7 @@
   };
 
   var checkComments = function () {
-    return getCommentsLength() < MAX_COMMENT_LENGTH;
+    return getCommentsLength() < MAX_COMMENT_LENGTH + 1;
   };
 
 
