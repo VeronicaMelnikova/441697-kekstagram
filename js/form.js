@@ -12,6 +12,7 @@
   var DEFAULT_LEVEL = 20;
   var MAX_BLUR = 3;
   var MAX_BRIGHTNESS = 3;
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
   var uploadOverlay = document.querySelector('.upload-overlay');
   var fileInput = document.querySelector('.upload-input');
@@ -59,6 +60,25 @@
     closeUploadOverlay();
   });
 
+  // загрузка фотографии
+  fileInput.addEventListener('change', function () {
+    var file = fileInput.files[0];
+    var fileName = file.name.toLowerCase();
+
+    var matches = FILE_TYPES.some(function (it) {
+      return fileName.endsWith(it);
+    });
+
+    if (matches) {
+      var reader = new FileReader();
+
+      reader.addEventListener('load', function () {
+        uploadImagePreview.src = reader.result;
+      });
+
+      reader.readAsDataURL(file);
+    }
+  });
 
   // применение фильтров
   var changeFilter = function (filterName) {
